@@ -11,7 +11,7 @@ Pandas
 Scikit-Learn
 
 #citation
-
+```
 @misc{gananath2016,
   author = {Gananath, R.},
   title = {DrugAI},
@@ -20,3 +20,4 @@ Scikit-Learn
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/Gananath/DrugAI}}
 }
+```
