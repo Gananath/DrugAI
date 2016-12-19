@@ -1,6 +1,8 @@
 # DrugAI
-Classification of Drug Like molecule using Neural Networks
+Classification of Drug Like molecule using Neural Networks.
 
+more about DrugAI..
+[http://gananath.github.io/drugai.html](http://gananath.github.io/drugai.html)
 #Requirments
 Python 2.7
 
