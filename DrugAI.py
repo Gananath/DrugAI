@@ -26,7 +26,7 @@ epoch=20
 #batch size
 bs=15
 #number of cross validation
-ncv=1
+ncv=10
 
 
 # read file into pandas from the working directory
