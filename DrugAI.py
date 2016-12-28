@@ -94,7 +94,7 @@ for i in range(0,ncv):
     #Prevents "I/O opertion on closed file" value error by adding sleep function
     sleep(5)
 
-#not the best model
+#Saving models as h5 files
 nam="Smiles_model" + str(mi) + "-" + str(mx) + ".h5"
 fpath="/home/gananath/Desktop/" + str(nam)
 model.save(fpath)
