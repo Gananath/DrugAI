@@ -43,6 +43,7 @@ Y=Y.values
 Y=Y.astype('int')
 type(Y)
 
+#empty variables
 cvscore=[]
 lscore=[]
 auroc=[]
@@ -51,12 +52,13 @@ auroc=[]
 #kfold cross validation loop
 for i in range(0,ncv):
 	
-	#spliting data into training and testing
+    #spliting data into training and testing
     X_train, X_test, y_train, y_test = train_test_split(X, Y,test_size=0.3, random_state=i)
+	
     # instantiate the vectorizer    
     vect = CountVectorizer(analyzer=u'char',lowercase=False,ngram_range=(mi,mx))
+	
     # learn training data vocabulary, then use it to create a document-term matrix
-
     X_train_dtm = vect.fit_transform(X_train)
 
     # creating model
