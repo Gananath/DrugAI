@@ -1,4 +1,4 @@
-#please remember to change the path of CSV file and saving file(fpath)
+#PLEASE REMEMBER TO CHANGE THE DATASET PATH AND FILE SAVING PATH(fpath)
 
 from keras.models import Sequential
 from keras.layers import Dense,Dropout
@@ -96,6 +96,7 @@ for i in range(0,ncv):
     los=np.mean(np.array(history.history['val_loss']))
     cvscore=np.append(score,cvscore)
     lscore=np.append(los,lscore)
+    auroc=np.append(auroc,a_r)
     
     print("kfold: " + str(i+1) + " WAIT..." )
     
