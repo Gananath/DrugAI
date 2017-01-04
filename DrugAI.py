@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 from time import sleep
 import h5py
+from sklearn.metrics import roc_auc_score
 from sklearn import metrics
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.cross_validation import train_test_split
@@ -44,6 +45,7 @@ type(Y)
 
 cvscore=[]
 lscore=[]
+auroc=[]
 
 #custom made k fold cv
 #kfold cross validation loop
@@ -83,6 +85,10 @@ for i in range(0,ncv):
     #np.argmax(y_pred_class)
     #vect.vocabulary_
 
+    #ROC_AUC metrics calculation
+    preds = model.predict(X_test_dtm.toarray())
+    a_r=roc_auc_score(y_test,preds)
+	
     #accuracy,loss calculation
     score=np.mean(np.array(history.history['val_acc']))
     los=np.mean(np.array(history.history['val_loss']))
@@ -99,8 +105,13 @@ nam="Smiles_model" + str(mi) + "-" + str(mx) + ".h5"
 fpath="/home/gananath/Desktop/" + str(nam)
 model.save(fpath)
 
+#Mean calculation
 avg=np.mean(cvscore)
 lavg=np.mean(lscore)
+avg_auroc=np.mean(auroc)
 
-print("\nCV Average Accuracy: "+ str(avg) +"\nCV Average Loss: " + str(lavg))
+print("\nCV Average Accuracy: "+ str(avg) +"\nCV Average Loss: " + str(lavg) + "\nAUROC: " + str(avg_auroc))
+
+#summary of the model
+print(model.summary())
 
