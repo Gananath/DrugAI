@@ -88,15 +88,18 @@ for i in range(0,ncv):
     #vect.vocabulary_
 
     #ROC_AUC metrics calculation
-    preds = model.predict(X_test_dtm.toarray())
-    a_r=roc_auc_score(y_test,preds)
+    pred_prob = model.predict(X_test_dtm.toarray())
+    preds = np.zeros_like(pred_prob)
+    preds[np.arange(pred_prob.shape[0]), np.argmax(pred_prob, axis=1)] = 1
+    
+    iarc=roc_auc_score(y_test,preds)
 	
     #accuracy,loss calculation
     score=np.mean(np.array(history.history['val_acc']))
     los=np.mean(np.array(history.history['val_loss']))
     cvscore=np.append(score,cvscore)
     lscore=np.append(los,lscore)
-    auroc=np.append(auroc,a_r)
+    auroc=np.append(auroc,iarc)
     
     print("kfold: " + str(i+1) + " WAIT..." )
     
