@@ -3,16 +3,19 @@ Classification of Drug Like molecule using Neural Networks.
 
 more about DrugAI..
 [http://gananath.github.io/drugai.html](http://gananath.github.io/drugai.html)
-#Requirments
-Python 2.7
+# Requirments
+- Python 2.7
 
-Keras(Theano)
+- Keras(Theano)
 
-Pandas
+- Pandas
 
-Scikit-Learn
+- Scikit-Learn
 
-#citation
+# DrugAI-Gen.py (Updade: 9-Apr-2017)
+I am also adding a Generator script for creating drug like molecule in this project. 
+
+# citation
 ```
 @misc{gananath2016,
   author = {Gananath, R.},
