@@ -12,8 +12,9 @@ more about DrugAI..
 
 - Scikit-Learn
 
-# DrugAI-Gen.py (Updade: 9-Apr-2017)
+# DrugAI-Gen.py (Update: 9-Apr-2017)
 I am also adding a Generator script for creating drug like molecule in this project. 
+Read more from here [http://gananath.github.io/drugai-gen.html](http://gananath.github.io/drugai-gen.html)
 
 # citation
 ```
