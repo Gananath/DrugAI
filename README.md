@@ -17,7 +17,7 @@ I am also adding a Generator script for creating drug like molecule in this proj
 Read more from here [http://gananath.github.io/drugai-gen.html](http://gananath.github.io/drugai-gen.html)
 
 # Bonus Dataset
-Because I seen a increase in demand for **DrugAI-Gen.py**; for programmers I have added another dataset *sms.tsv*. It contains SMS spams. Try to use it for generating *Spam's* and *Ham's*.
+Because I seen a increase in interest for **DrugAI-Gen.py**; for programmers I have added another dataset *sms.tsv*. It contains SMS spams. Try to use it for generating *Spam's* and *Ham's*.
 
 # citation
 ```
