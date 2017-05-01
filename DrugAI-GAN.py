@@ -203,8 +203,7 @@ for episode in range(episodes):
     disloss=trainDis(y_dash)
     disloss=trainDis("mc")
     ganloss=trainGAN()  
-    ganloss=trainGAN()   
-    
+	
     print("Discrimator loss "+str(disloss)+"\nGAN loss "+str(ganloss))
     
     if episode%(episodes/100)==0:
