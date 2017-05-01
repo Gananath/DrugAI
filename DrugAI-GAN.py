@@ -110,25 +110,25 @@ def trainDis(data=None):
         # Train on fake data        
         fake_data= G.predict(x_dash)
         targets = np.zeros(x_dash.shape[0]).astype(int)
-        Dloss=D.fit(fake_data, targets,nb_epoch=1)
+        Dloss=D.fit(fake_data, targets,nb_epoch=1,verbose=0)
     elif data=="mc":
         #preventing mode collapse
         #artificial noice training 
         fake_ydata=np.copy(y_dash)
         shuffle3D(fake_ydata)
         targets = np.zeros(x_dash.shape[0]).astype(int)
-        Dloss=D.fit(fake_ydata, targets,nb_epoch=1)
+        Dloss=D.fit(fake_ydata, targets,nb_epoch=1,verbose=0)
     else:
         # Train on real data
         targets = np.ones(x_dash.shape[0]).astype(int)
-        Dloss=D.fit(data,targets,nb_epoch=1)
+        Dloss=D.fit(data,targets,nb_epoch=1,verbose=0)
     #print Dloss.history.keys()
     return Dloss.history['loss'][0]
 
 def trainGAN():  	
 	#train Generator    
 	target = np.ones(x_dash.shape[0]).astype(int)
-	gan_loss = GAN.fit(x_dash, target,nb_epoch=1)
+	gan_loss = GAN.fit(x_dash, target,nb_epoch=1,verbose=0)
 	
 	return gan_loss.history['loss'][0]
     
@@ -204,7 +204,7 @@ for episode in range(episodes):
     disloss=trainDis("mc")
     ganloss=trainGAN()  
 	
-    print("Discrimator loss "+str(disloss)+"\nGAN loss "+str(ganloss))
+    print("D loss="+str(disloss)+"GAN loss="+str(ganloss))
     
     if episode%(episodes/100)==0:
         
