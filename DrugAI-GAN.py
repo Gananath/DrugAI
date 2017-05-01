@@ -19,10 +19,15 @@ import os.path
 
 ##seed for random number reproduction
 np.random.seed(2017)
-episodes=3000
+episodes=30000
 
 if not os.path.exists(os.getcwd()+'/output/'):
     os.makedirs(os.getcwd()+'/output/')
+
+def shuffle3D(arr):
+    for a in arr:
+        np.random.shuffle(a)
+    
 ##time step addtition to feature 
 def dimX(x,ts):
     x=np.asarray(x)
@@ -74,6 +79,8 @@ def Gen():
     G.add(LSTM(216, return_sequences=True))
     G.add(Dropout(0.3))
     G.add(LSTM(216, return_sequences=True))
+    G.add(Dropout(0.3))
+    G.add(LSTM(216, return_sequences=True))
     G.add(TimeDistributed(Dense(y_dash.shape[2], activation='softmax')))
     G.compile(loss='categorical_crossentropy', optimizer=Adam(lr=2e-4))
     return G
@@ -104,18 +111,26 @@ def trainDis(data=None):
         fake_data= G.predict(x_dash)
         targets = np.zeros(x_dash.shape[0]).astype(int)
         Dloss=D.fit(fake_data, targets,nb_epoch=1)
+    elif data=="mc":
+        #preventing mode collapse
+        #artificial noice training 
+        fake_ydata=np.copy(y_dash)
+        shuffle3D(fake_ydata)
+        targets = np.zeros(x_dash.shape[0]).astype(int)
+        Dloss=D.fit(fake_ydata, targets,nb_epoch=1)
     else:
         # Train on real data
         targets = np.ones(x_dash.shape[0]).astype(int)
         Dloss=D.fit(data,targets,nb_epoch=1)
     #print Dloss.history.keys()
-    return Dloss.history['loss']
+    return Dloss.history['loss'][0]
 
-def trainGAN():    
-    #train Generator    
-    target = np.ones(x_dash.shape[0]).astype(int)
-    gan_loss = GAN.fit(x_dash, target,nb_epoch=1)
-    return gan_loss.history['loss']
+def trainGAN():  	
+	#train Generator    
+	target = np.ones(x_dash.shape[0]).astype(int)
+	gan_loss = GAN.fit(x_dash, target,nb_epoch=1)
+	
+	return gan_loss.history['loss'][0]
     
 ##read csv file
 data = pd.read_csv('stahl.csv')
@@ -146,9 +161,12 @@ y_dash=dimY(y,ts)
 x_dash=dimX(X,ts)   
 
 
+
+#initializing models
 G=Gen()
 D=Dis()
 GAN=Gan()
+
 
 '''
 if os.path.exists(os.getcwd()+"/output/Gen.h5")==True and os.path.exists(os.getcwd()+"/output/Dis.h5")==True and os.path.exists(os.getcwd()+"/output/Gan.h5")==True:
@@ -169,47 +187,46 @@ print("Dis output "+str(D.output_shape))
 D.trainable=True
 
 
+
 #pre training
 for i in range(20):
     shuffleData = np.random.permutation(y_dash)
     trainDis()
     dloss=trainDis(shuffleData)
-    print("Training Discrimator "+str(dloss))
+    print("Pre Training Discrimator "+str(dloss)+"\n")
     
-    
-
 
 for episode in range(episodes):
-    print("Epoch "+str(episode)+"/"+str(episodes)) 
+    print("Epoch "+str(episode)+"/"+str(episodes))
     trainDis()
     shuffleData = np.random.permutation(y_dash)
     disloss=trainDis(y_dash)
-    ganloss=trainGAN()
+    disloss=trainDis("mc")
+    ganloss=trainGAN()  
+    ganloss=trainGAN()   
     
     print("Discrimator loss "+str(disloss)+"\nGAN loss "+str(ganloss))
-    if episode%(episodes/10)==0:
-        '''
+    
+    if episode%(episodes/100)==0:
+        
         #G.save(os.getcwd()+'/output/Gen.h5')
         #D.save(os.getcwd()+'/output/Dis.h5')
         #GAN.save(os.getcwd()+'/output/Gan.h5')
-        '''
+        
         #for saving files in floydhub output directory              
-        G.save("/output/Gen.h5")
-        D.save("/output/Dis.h5")
-        GAN.save("/output/Gan.h5")
-	   
+        G.save("/output/Gen_mc.h5")
+        D.save("/output/Dis_mc.h5")
+        GAN.save("/output/Gan_mc.h5")
+	 
    
-
-
 
 
 ##For Prediction
 
 '''
-
 #start Prediction
 Ghash=Gen()
-Ghash.load_weights('Gen.h5')
+Ghash.load_weights('Gen_mc.h5')
 x_pred=[[0,0,0,1,0,0],
         [0,1,0,0,0,0],
         [0,0,0,0,0,1]]
@@ -222,5 +239,5 @@ y_pred=seq_txt(y_pred)
 s=smiles_output(y_pred)
 print s
 #end prediction
+
 '''
-    
