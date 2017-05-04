@@ -93,7 +93,7 @@ x_dash=dimX(X,ts)
 
 ##LSTM model   
 model = Sequential()
-model.add(TimeDistributed(Dense(x_dash.shape[1]), input_shape=(x_dash.shape[1],x_dash.shape[2])))
+model.add(TimeDistributed(Dense(x_dash.shape[2]), input_shape=(x_dash.shape[1],x_dash.shape[2])))
 model.add(LSTM(216, return_sequences=True))
 model.add(Dropout(0.3))
 model.add(LSTM(216, return_sequences=True))
