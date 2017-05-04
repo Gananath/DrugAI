@@ -138,7 +138,7 @@ def trainGAN():
 ##read csv file
 data = pd.read_csv('stahl.csv')
 data=data.reindex(np.random.permutation(data.index))
-data=data.head(30)  
+#data=data.head(30)  
 Y=data.SMILES
 Y.head()
 X=data.ix[:,1:7]
