@@ -3,7 +3,7 @@ Author: Gananath R
 DrugAI-GAN: Experiments with GAN for drug like molecule generation
 Contact: https://github.com/gananath
 '''
-#Some helpul links
+#Some helpful links
 #https://stats.stackexchange.com/questions/153285/derivative-of-softmax-and-squared-error
 #https://github.com/soumith/ganhacks
 #https://medium.com/towards-data-science/gan-by-example-using-keras-on-tensorflow-backend-1a6d515a60d0
@@ -46,7 +46,7 @@ def dimY(Y,ts):
             #print i, j, s
             temp[i, j, char_idx[s]] = 1
     return np.array(temp)
-#prediction of argmax
+#prediction of sequence with argmax
 def prediction(preds):
     y_pred=[]
     for i,c in enumerate(preds):
@@ -75,7 +75,7 @@ def smiles_output(s):
 def Gen():
 	#Generator model
     G = Sequential()
-    G.add(TimeDistributed(Dense(x_dash.shape[1]), input_shape=(x_dash.shape[1],x_dash.shape[2])))
+    G.add(TimeDistributed(Dense(x_dash.shape[2]), input_shape=(x_dash.shape[1],x_dash.shape[2])))
     G.add(LSTM(216, return_sequences=True))
     G.add(Dropout(0.3))
     G.add(LSTM(216, return_sequences=True))
@@ -88,7 +88,7 @@ def Gen():
 def Dis():
 	#Discriminator model
     D = Sequential()
-    D.add(TimeDistributed(Dense(10), input_shape=(y_dash.shape[1],y_dash.shape[2])))
+    D.add(TimeDistributed(Dense(y_dash.shape[2]), input_shape=(y_dash.shape[1],y_dash.shape[2])))
     D.add(LSTM(216, return_sequences=True))
     D.add(Dropout(0.3))
     D.add(LSTM(60, return_sequences=True))
@@ -105,37 +105,40 @@ def Gan():
     GAN.compile(loss='binary_crossentropy', optimizer=Adam(lr=2e-4))
     return GAN
 
-def trainDis(data=None):
-    if data is None:
+def trainDis(data=None,mc=None):
+    if data is None and mc is None:
         # Train on fake data        
         fake_data= G.predict(x_dash)
         targets = np.zeros(x_dash.shape[0]).astype(int)
-        Dloss=D.fit(fake_data, targets,nb_epoch=1,verbose=0)
-    elif data=="mc":
+        Dloss=D.fit(fake_data, targets,nb_epoch=1) 
+             
+    elif data is None and mc=="mc":
         #preventing mode collapse
         #artificial noice training 
         fake_ydata=np.copy(y_dash)
         shuffle3D(fake_ydata)
         targets = np.zeros(x_dash.shape[0]).astype(int)
-        Dloss=D.fit(fake_ydata, targets,nb_epoch=1,verbose=0)
+        Dloss=D.fit(fake_ydata, targets,nb_epoch=1)    
+            
     else:
         # Train on real data
         targets = np.ones(x_dash.shape[0]).astype(int)
-        Dloss=D.fit(data,targets,nb_epoch=1,verbose=0)
+        Dloss=D.fit(data,targets,nb_epoch=1)    
+           
     #print Dloss.history.keys()
     return Dloss.history['loss'][0]
 
 def trainGAN():  	
 	#train Generator    
 	target = np.ones(x_dash.shape[0]).astype(int)
-	gan_loss = GAN.fit(x_dash, target,nb_epoch=1,verbose=0)
+	gan_loss = GAN.fit(x_dash, target,nb_epoch=1)
 	
 	return gan_loss.history['loss'][0]
     
 ##read csv file
 data = pd.read_csv('stahl.csv')
 data=data.reindex(np.random.permutation(data.index))
-#data=data.head(30)  
+data=data.head(30)  
 Y=data.SMILES
 Y.head()
 X=data.ix[:,1:7]
@@ -157,10 +160,7 @@ idx_char = dict((i, c) for i, c in enumerate(chars))
 
 
 y_dash=dimY(y,ts)
-
 x_dash=dimX(X,ts)   
-
-
 
 #initializing models
 G=Gen()
@@ -182,11 +182,11 @@ print("Gen input "+str(G.input_shape))
 print("Gen output "+str(G.output_shape))
 print("Dis input "+str(D.input_shape))
 print("Dis output "+str(D.output_shape))
+#print D.summary()
+#print G.summary()
 
 #enable training in discrimator
 D.trainable=True
-
-
 
 #pre training
 for i in range(20):
@@ -194,18 +194,21 @@ for i in range(20):
     trainDis()
     dloss=trainDis(shuffleData)
     print("Pre Training Discrimator "+str(dloss)+"\n")
-    
+ 
 
 for episode in range(episodes):
     print("Epoch "+str(episode)+"/"+str(episodes))
     trainDis()
     shuffleData = np.random.permutation(y_dash)
     disloss=trainDis(y_dash)
-    disloss=trainDis("mc")
-    ganloss=trainGAN()  
-	
-    print("D loss="+str(disloss)+"GAN loss="+str(ganloss))
+    disloss=trainDis(mc="mc")      
+    ganloss=trainGAN()    
     
+	
+    print("D loss="+str(disloss)+" GAN loss="+str(ganloss))
+    
+    
+   
     if episode%(episodes/100)==0:
         
         #G.save(os.getcwd()+'/output/Gen.h5')
@@ -216,8 +219,20 @@ for episode in range(episodes):
         G.save("/output/Gen_mc.h5")
         D.save("/output/Dis_mc.h5")
         GAN.save("/output/Gan_mc.h5")
+        
+        
+    if episode%(episodes/600)==0:
+        print("Predicting Molecule")
+        x_pred=[[0,0,0,1,0,0],[0,1,0,0,0,0],[0,0,0,0,0,1]]
+        x_pred=dimX(x_pred,ts)   
+        preds=G.predict(x_pred)
+        y_pred=prediction(preds)
+        y_pred=seq_txt(y_pred)
+        s=smiles_output(y_pred)
+        print(s)
+        
 	 
-   
+
 
 
 ##For Prediction
@@ -226,9 +241,15 @@ for episode in range(episodes):
 #start Prediction
 Ghash=Gen()
 Ghash.load_weights('Gen_mc.h5')
+
 x_pred=[[0,0,0,1,0,0],
         [0,1,0,0,0,0],
         [0,0,0,0,0,1]]
+
+x_pred=[[0.6,0,0,0,0,0],
+        [.3,0,0,0,0,0],
+        [0.7,0,0,0,0,0]]
+	
 x_pred=dimX(x_pred,ts)      
 preds=Ghash.predict(x_pred)
 y_pred=prediction(preds)
@@ -240,3 +261,5 @@ print s
 #end prediction
 
 '''
+
+
