@@ -14,6 +14,7 @@ from keras.layers import Dense,LSTM,Dropout,Flatten
 from keras.callbacks import History 
 from keras.layers.wrappers import TimeDistributed
 from keras.optimizers import Adam,SGD
+from keras.layers.normalization import BatchNormalization
 import pandas as pd
 import os.path
 
@@ -81,6 +82,7 @@ def Gen():
     G.add(LSTM(216, return_sequences=True))
     G.add(Dropout(0.3))
     G.add(LSTM(216, return_sequences=True))
+    #G.add(BatchNormalization(momentum=0.9))
     G.add(TimeDistributed(Dense(y_dash.shape[2], activation='softmax')))
     G.compile(loss='categorical_crossentropy', optimizer=Adam(lr=2e-4))
     return G
