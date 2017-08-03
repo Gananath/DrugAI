@@ -6,7 +6,7 @@ more about DrugAI..
 # Requirments
 - Python 2.7
 
-- Keras(Theano)
+- Keras(Theano/Tensorflow)
 
 - Pandas
 
