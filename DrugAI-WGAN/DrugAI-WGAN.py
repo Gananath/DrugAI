@@ -58,7 +58,7 @@ idx_char = dict((i, c) for i, c in enumerate(chars))
 y_dash = dimY(y, ts, char_idx, chars)
 x_dash = X
 print("Shape\n X={0} Y={1}".format(x_dash.shape, y_dash.shape))
-# X_train, X_test, Y_train, Y_test = splitting(y_dash, x_dash)
+
 
 BATCH_SIZE = 32
 HALF_BATCH = BATCH_SIZE / 2
