@@ -24,7 +24,7 @@ Read more from here [http://gananath.github.io/drugai-gan.html](http://gananath.
 A [Wasserstein GAN model](http://gananath.github.io/drugai-gan.html) with CNN; this model currently trains the fastest and probably gives the best result.
 
 ```
-# Generated drug
+# Samples Generated 
 ['CC1=C(C(C(=O)O)(=CC=N2[S]CCCCCC(C(Cl)C1C4)[+])C2=C4=O|||||||||||||||||||||||||||' 'CC1=C(C(C(=O)OO(=CC=N2[N]CCCCCC(C(Cl)C1C3)[+])C2=CC=O)||||||||||||||||||||||||||' 'CC1=C(C(C(=O)O)(=CC=N2[N]CCC=CC(C(CO)C1C3)[+])C2=CC=O)||||||||||||||||||||||||||']
 ```
 - Recently I came across [GAN's which uses condition](https://camo.githubusercontent.com/df22e45e90834484356be762450ffc5f66c34a83/68747470733a2f2f7062732e7477696d672e636f6d2f6d656469612f43774d30427a6a5655414157546e342e6a70673a6c61726765) like cGAN,acGAN etc. which uses a **noise+class** as input whereas I am using only **class**.
